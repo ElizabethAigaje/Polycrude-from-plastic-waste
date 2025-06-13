@@ -28,7 +28,7 @@ def create_model(sys, analysis, hydrogen_handling):   #parameter to call if the 
         System to be assessed.
     analysis : str
         All, technological or contextual.
-    hydrogen_handling: Iterable(stream)
+    hydrogen_handling: str
         purchase and storage or on-site production.
     
     See also
