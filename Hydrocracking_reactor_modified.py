@@ -102,7 +102,6 @@ class Hydrocracking_reactor(Reactor):
     def __init__(self, ID='', ins=None, outs=(), thermo=None,
                  init_with='Stream',
                  include_construction=False,
-                 #reaction=None,
                  WHSV=1, # wt./hr per wt. catalyst 
                  catalyst_lifetime=3*7920, 
                  catalyst_ID='HC_catalyst',
@@ -153,10 +152,6 @@ class Hydrocracking_reactor(Reactor):
         self.wall_thickness_factor = wall_thickness_factor
         self.vessel_material = vessel_material
         self.vessel_type = vessel_type
-
-        #When I want to assess the polycrude yield of one scenario, we exclude reaciton as an atribute (#reaction and # self.rection)
-        #Then, we also activate self.hydrocracking_reaction and def_update function, as well as self.update_reactions()
-        #We further change al the self.reaction for self.hydrocracking_reaction
 
         #Hydrocracking reaction to produce polycrude from plastic waste
         self.hydrocracking_reaction=bst.ParallelReaction([
