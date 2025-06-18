@@ -33,7 +33,13 @@ def sensitivity_analysis(sys, analysis, num_samples, hydrogen_handling):
           Number of samples
      hydrogen_handling: str
           purchase and storage or on-site production.
-
+    
+     Returns
+     -----
+     r_df : DataFrame   
+        Spearman correlations 
+     p_df : DataFrame
+        P values
     """
      
      sensitivity_model=create_model(sys,analysis=analysis,hydrogen_handling=hydrogen_handling)
