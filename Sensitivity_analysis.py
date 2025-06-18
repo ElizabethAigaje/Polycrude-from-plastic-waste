@@ -25,7 +25,7 @@ def sensitivity_analysis(sys, analysis, num_samples, hydrogen_handling):
 
     Parameters
     ----------
-     sys : str
+     sys : qsdsan.System
           System to be assessed.
      analysis : str
           All, technological or contextual.
