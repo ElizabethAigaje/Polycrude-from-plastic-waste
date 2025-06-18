@@ -44,11 +44,6 @@ bst.nbtutorial()
 #Collect components
 cmps= create_components()
 
-#For the TEA with out reaction as attribute, we exclude # reaction from the def system_TEA
-# We deactivate the if function of the scenario analysis and we only leave active the reaction parameters (pressure, temperature, WHSV, time, yield)
-# We deactivate the reaction parameters of the hydrocracking
-#And in the sys to assess, we do not include the scenario on reaction
-
 def system_TEA(feedPW, hydrogen_handling):  #reaction
     """ Creates the class that models the polycrude manufacturing processs and performs the TEA
 
@@ -66,51 +61,34 @@ def system_TEA(feedPW, hydrogen_handling):  #reaction
 
     tea : qsdsan.TEA
         Net present value, [USD]
-
+    
+    References
+    ----------
+    [1] Celik, G.; Kennedy, R. M.; Hackler, R. A.; Ferrandon, M.; Tennakoon, A.; Patnaik, S.; LaPointe, A. M.; Ammal, S. C.; 
+        Heyden, A.; Perras, F. A.; Pruski, M.; Scott, S. L.; Poeppelmeier, K. R.; Sadow, A. D.; Delferro, M. Upcycling 
+        Single-Use Polyethylene into High-Quality Liquid Products. ACS Cent. Sci. 2019, 5 (11), 1795–1803. 
+        https://doi.org/10.1021/acscentsci.9b00722
+    [2] Cappello, V.; Sun, P.; Zang, G.; Kumar, S.; Hackler, R.; Delgado, H. E.; Elgowainy, A.; Delferro, M.; Krause, T. 
+        Conversion of Plastic Waste into High-Value Lubricants: Techno-Economic Analysis and Life Cycle Assessment. 
+        Green Chem. 2022, 24 (16), 6306–6318. https://doi.org/10.1039/D2GC01840C
+    [3] Seider, W. D.; Seader, J. D.; Lewin, D. R. PRODUCT & PROCESS DESIGN PRINCIPLES: SYNTHESIS, ANALYSIS AND EVALUATION, 
+        (With CD); John Wiley & Sons, 2009.
+    [4] U.S. Energy Information Administration. Electric power monthly: Average price of electricity to ultimate customers. 
+        https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_03 (accessed 2024-12-04)
+    [5] Ma, J.; Tominac, P. A.; Aguirre-Villegas, H. A.; Olafasakin, O. O.; Wright, M. M.; Benson, C. H.; Huber, G. W.; 
+        Zavala, V. M. Economic Evaluation of Infrastructures for Thermochemical Upcycling of Post-Consumer Plastic Waste. 
+        Green Chem. 2023, 25 (3), 1032–1044. https://doi.org/10.1039/D2GC04005K.
+    [6] Dutta, A.; Sahir, A.; Tan, E. Process Design and Economics for the Conversion of Lignocellulosic Biomassto Hydrocarbon 
+        Fuels: Thermochemical Research Pathways with In Situ and Ex Situ Upgrading of Fast Pyrolysis Vapors
     """
-    # if reaction == 'base_case':
-
-    #     #Hydrocracking reaction conditions
+    
+    #Hydrocracking reaction conditions from reference [1]
     reaction_pressure= 11.7 #bar   #Reaction conditions for producing long-HC chains products
     reaction_temperature=300 #C    # Average temperature ranges from 250-300 C
     WHSV_reaction=0.5
     reaction_time=24
-    #     #Hydrocracking reaction
-
-    bpolycrude_yield=0.91   #baseline yield and conversion of 100% from Capello et al. Green Chem., 2022, 24, 6306.
-    #                         #Selectivity of co-products from Lui et al., Scie Adv. 2021, 7:eabf8283
-
-    #     hydrocracking_reaction=bst.ParallelReaction([
-    #         #Reaction definition                     #Reactant    #Conversion         
-    #     bst.Reaction('LDPE + H2 -> polycrude', reactant='LDPE',   X=bpolycrude_yield , basis='wt', correct_atomic_balance=True ),
-    #     bst.Reaction('LDPE + H2 ->  C3H8',      reactant='LDPE',   X=(1-bpolycrude_yield)*0.17 , basis='wt', correct_atomic_balance=True),
-    #     bst.Reaction('LDPE + H2 ->  C4H10',     reactant='LDPE',   X=(1-bpolycrude_yield)*0.83 , basis='wt', correct_atomic_balance=True)])  #calculate the stoichometric indixes
-
-    #     hydrocracking_reaction.show()
-
-    # elif reaction == 'lowreactiontime_case':
-        
-    #     reaction_pressure = 30 #bar   
-    #     reaction_temperature=250 #C 
-    #     reaction_time= 2   # h
-        
-    #     bpolycrude_yield=0.75  # Polycrude flow rate out/LDPE flor rate in
-    #     WHSV_reaction= 0.5   
-
-        
-    #     hydrocracking_reaction=bst.ParallelReaction([
-    #         #Reaction definition                     #Reactant    #Conversion         
-    #     bst.Reaction('LDPE + H2 -> polycrude', reactant='LDPE',   X=bpolycrude_yield ,          basis='wt', correct_atomic_balance=True ),
-    #     bst.Reaction('LDPE + H2 ->  C3H8',     reactant='LDPE',   X=(1-bpolycrude_yield)*0.2 , basis='wt', correct_atomic_balance=True),   #working with fixed selectivity
-    #     bst.Reaction('LDPE + H2 ->  C4H10',    reactant='LDPE',   X=(1-bpolycrude_yield)*0.8 , basis='wt', correct_atomic_balance=True),
-
-    #         ]) 
-   
-    #     hydrocracking_reaction.show()
-   
-    # else:
-    #     raise RuntimeError(f'In system_TEA(sys, reaction, hydrogen_handling), parameter={reaction} is not "base_case" or "lowreactiontime_case". Please define as one of these.')
-    # # Creating INLET STREAMS
+    
+    # Creating INLET STREAMS
 
     qs.SanStream('feedstock', phase='s', price=0.23) # LDPE with its impurities
     qs.SanStream('HC_catalyst', phase='s', T=25+273, P=101325, price=326.5)    
@@ -124,7 +102,6 @@ def system_TEA(feedPW, hydrogen_handling):  #reaction
 
     qs.SanStream('POLYCRUDE', price=0.869)   #side product #100/(782.589*0.158981)  #0.7767809569578442(H2 production), 1.107365670221492 (H2 storage)    #price from potential end-users is  100$/barrel tronformed to $/kg
     qs.SanStream('LightHC', price=0.4917)   #side product
-
 
     # --------------------------------------------------------------------------
     # Create the System
@@ -176,7 +153,6 @@ def system_TEA(feedPW, hydrogen_handling):  #reaction
     #PC1=qs.sanunits.PhaseChanger('PC1', ins=HX3-0, outs='Recovered_solvent', phase='l')
     HX4=qs.sanunits.HXutility('HX202', ins=HX3-0, outs='ss202', T= 110+273.15)
     P3=qs.sanunits.Pump('P201', ins=HX4-0, outs=2-M1, P=101324)
-    
 
     #System 2: Light HC recovery and H2 recycling
     HX5=qs.sanunits.HXutility('HX402', ins=F2.outs[0], outs='ss404', T= 50+273.15, rigorous=True, material='Carbon steel/stainles steel')
@@ -201,9 +177,8 @@ def system_TEA(feedPW, hydrogen_handling):  #reaction
         sys1=qs.System('sys1', path=(C1,G1,C2,ST3,M1,P1,HX1,R1,F1,F2,M2,P2,D1,HX2,ST1,HX3, HX4, P3), recycle=P3-0)
         sys2=qs.System('sys2', path=(sys1,HX5, IC1,PSA1,S1,IC2,HX6,HX7,ST2, ST4, M4), recycle=M4-0)
 
-
     elif hydrogen_handling == 'on-site production':
-        # Accounts for the production via PEM electrolysis were costs including the production and any additional (BOP) cost are included to delyver H2 at 450 psig
+        # Accounts for the production via PEM electrolysis were costs including the production and any additional (BOP) cost are included to deliver H2 at 450 psig
         M4=Mixer('M501', ins=(fs_stream.makeup_hydrogen, PSA1-1), outs=1-R1, rigorous=False)    #recovered H2 is from PSA1-1 and out is calculated in the reactor, so the make up is calcualated
         PEM1=Electrolysis('PEM501', ins=fs_stream.water_required, outs=(0-M4, 'oxygen_sideproduct'), electricity_usage=55.8)
         #ST5=qs.sanunits.StorageTank('ST501', ins=PEM1-0, outs=0-M4, tau=24, vessel_material='Stainless steel', vessel_type='Spherical; 30–200 psig')
@@ -221,8 +196,8 @@ def system_TEA(feedPW, hydrogen_handling):  #reaction
     # Calculate TEA
     # ==============================================================================================
 
-    # Labor costs
-    # Calculated according to Cappello, V. et. al, Green Chem. 2022, 24 (16), 6306–6318. https://doi.org/10.1039/D2GC01840C.
+    # Labor costs from reference [2]
+   
     P = 1   # Porcesses handling solids 
     N = 13   # Remaining steps
     num_employees = np.ceil((6.29+(3.17*(P)**2)+0.23*N)**0.5)  # Number of operators per shift
@@ -230,7 +205,7 @@ def system_TEA(feedPW, hydrogen_handling):  #reaction
     operating_hours=2080 #h/year
     pay_rate=52.67   #$/h
 
-    # Calculated according to Seider - 4th edition product and process design principles
+    # Calculated according to reference [3]
     DWandB=num_employees*shifts_per_worker*operating_hours*pay_rate   #direct wages and benefits, $/year
     DSandB_supervisory= 0.15*DWandB   #direct salaries and benefits for supervisory nd engineering, $/year
     OSandSv=0.06*DWandB               #operating supplies and services, $/year
@@ -241,7 +216,7 @@ def system_TEA(feedPW, hydrogen_handling):  #reaction
     Labor=1.1*Lab_related_cost
 
     #Updating/getting prices from qsdsan
-    qs.PowerUtility.price=0.081 #$/kwh average value (2022-2023) from Electric Power Monthly - U.S. Energy Information Administration (EIA)
+    qs.PowerUtility.price=0.081 #$/kwh average value (2022-2023) from reference [4]
 
     #Additional OPEX
     #Accounting for the solid disposal cost for impurities in the diossolution units and catalyst in the reactor unit
@@ -251,7 +226,7 @@ def system_TEA(feedPW, hydrogen_handling):  #reaction
     #operating_days1=0.9*365                   #on_stream factor availability of 90% in NREL
     solid_disposal_OPEX= solid_disposal_cost*(solid_dissolution+solid_reactor)   #$/h
 
-    #Accounting for tranportation of LDPE and Polycrude
+    #Accounting for tranportation of LDPE and Polycrude accroding reference [5]
     #LDPE
     solid_fixed_cost= 3.01  #$/ton
     solid_variable_cost=0.07  #$/ton/km
@@ -264,15 +239,17 @@ def system_TEA(feedPW, hydrogen_handling):  #reaction
     distance_plant_refinery=20.5  #miles
     Polycrude_transportation_OPEX= (ST1.outs[0].F_mass/1000)*(liquid_fixed_cost+liquid_variable_cost*distance_plant_refinery**1.60934)   #$/h
 
+    #=======================================
+    #TEA (conditions based on reference [6])
+    #=======================================
 
-    #TEA
     tea=TEA_hydrocracking(system=sys2, 
                         IRR=0.10, #from NREL
                         duration=(2024,2044), #plant life 20 years
                         depreciation='MACRS7', #MACSRS + number of depreciation years
                         income_tax=0.35,  #NREL report
                         operating_days=0.9*365,  #NREL report
-                        lang_factor=4.28, #if no Lang factor provided, it calcualtes using bare module. From Seider - 4th edition pg 447 for solids-fluids processing plant
+                        lang_factor=4.28, #if no Lang factor provided, it calcualtes using bare module. Lang factor from Seider - 4th edition pg 447 for solids-fluids processing plant
                         construction_schedule= (0.08, 0.6, 0.32), # NREL report: 8% spent in year 2, 60% spents in year 1, 32% spent in year 0
                         startup_months= 6, #NREL 0.5 years
                         startup_FOCfrac=1,  #NREL
@@ -294,108 +271,14 @@ fs_unit = flowsheet.unit
 
 sys1, tea1,=system_TEA(10416.7, 'purchase and storage')
 #sys2, tea2,=system_TEA(10416.7, 'on-site production')
-#sys2, tea2,=system_TEA(10416.7, 'base_case', 'on-site production')
 tea1.show()
 #tea2.show()
-#tea.solve_IRR()
-#tea1.solve_price(fs_stream.POLYCRUDE)*782.59*0.158987
-# sys2.get_market_value(fs_stream.POLYCRUDE)
-MSP_breakdown(sys1, tea1, 'purchase and storage')
-# print(fs_stream.POLYCRUDE.F_mass)
-#sys1.save_report(file='sys2_H2onsite_oc_new10.xlsx')
-# print(f"Total TCI: ${tea1.FCI:,.2f}")
-# print(f"Total VOC: ${tea1.VOC:,.2f}/year")
-# print(f"Total FOC: ${tea1.FOC:,.2f}/year")
-# for stream in tea1.system.feeds:
-#      print(f"{stream.ID}: ${stream.cost:,.2f} per h")
-
-# print(f"Total Utility Cost: ${tea1.utility_cost:,.2f} per year")
-
-# print(f"Additional OPEX (e.g., solid disposal): ${tea1.system_add_OPEX:,.2f} per hour")
-
-# # # print("\n--- Product Sales Breakdown ---")
-# for stream in tea.system.products:
-#     print(f"{stream.ID}: ${stream.cost:,.2f} per h")
-
-# print(f"Total capital deprecitation: ${tea1.TDC} ")
-# tea.get_cashflow_table()
-
-# print(f"Polycrude price baseline: {fs_stream.POLYCRUDE.price}")
-# print(f"Minimum selling price: ${tea.solve_price(fs_stream.POLYCRUDE)} per bbl")  #*782.59*0.158987
-
-
-
+#tea1.solve_price(fs_stream.POLYCRUDE)*782.59*0.158987  #$/bbl
+#MSP_breakdown(sys1, tea1, 'purchase and storage')
 
 # Uncertainty_model
 
-# Uncertainty, stats = uncertainty_analysis(sys1, 'all', 3000, 'on-site production')
-# import pandas as pd
-# def organize_results(model, path):
-#     idx = len(model.parameters)
-#     parameters = model.table.iloc[:, :idx]
-#     results = model.table.iloc[:, idx:]
-#     percentiles = results.quantile([0, 0.05, 0.25, 0.5, 0.75, 0.95, 1])
-#     with pd.ExcelWriter(path) as writer:
-#         parameters.to_excel(writer, sheet_name='Parameters')
-#         results.to_excel(writer, sheet_name='Results')
-#         percentiles.to_excel(writer, sheet_name='Percentiles')
-
-# organize_results(Uncertainty, 'basecase_purchase_uncertainty_3000samples_improved9011_paper.xlsx')
-# r_df, p_df,=sensitivity_analysis(sys1,'all', 3000, 'on-site production')
-# fig, ax = qs.stats.plot_correlations(r_df)
-# fig
-# print(r_df, p_df)
-
-#COMBINED PLOTS
-# msp1, contrib1 = MSP_breakdown(sys1, tea1, 'purchase and storage')
-# msp2, contrib2 = MSP_breakdown(sys2, tea2, 'on-site production')
-
-# # # Create subplot figure
-# fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(11/2.54, 1.5 * 7/2.54))  # two-column width
-
-# custom_colors = ['#60c1cf', '#90918e', '#a280b9', '#79694e', '#79bf82', '#f98f60']
-
-# for ax, contrib, title in zip(axes, [contrib1, contrib2], ['a) H$_2$ purchase & storage', 'b) On-site H$_2$ production']):
-#     contrib.plot(kind='bar', stacked=True, color=custom_colors,
-#                  ax=ax, edgecolor='black', linewidth=0.5)
-
-#     ax.set_title(title, fontsize=10, fontname='Arial')
-#     ax.set_xlabel('')
-#     ax.set_ylabel('Minimum Selling Price, $/bbl poly-crude' if title == 'a) H$_2$ purchase & storage' else '', fontsize=10, fontname='Arial')
-#     ax.tick_params(axis='x', rotation=90, labelsize=10)
-#     ax.spines['top'].set_visible(False)
-#     ax.spines['right'].set_visible(False)
-#     ax.spines['bottom'].set_position(('data', 0))
-#     ax.axhline(y=0, color='black', linewidth=0.8)
-
-#     # Custom tick placement and formatting
-#     y_min, y_max = ax.get_ylim()
-#     y_min = min(-20, y_min)
-#     y_max = max(120, y_max)
-#     ax.set_ylim(y_min, y_max)
-#     ax.set_yticks(np.arange(np.floor(y_min/20)*20, np.ceil(y_max/20)*20+1, 20))
-#     ax.tick_params(axis='y', direction='in', labelsize=10)
-
-#     # Format x-tick labels
-#     ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha='center')
-#     for label in ax.get_xticklabels():
-#         label.set_y(-6)  # fine-tune vertical position
-
-#     # Remove subplot legend (we'll use a single shared legend)
-#     ax.legend().remove()
-
-# # Get legend handles and labels from the first subplot only
-# handles, labels = axes[0].get_legend_handles_labels()
-
-# # Add single shared legend
-# fig.legend(handles, labels, loc='upper center', ncol=3, bbox_to_anchor=(0.5, 0.95), fontsize=8)
-
-# # Adjust layout and add shared legend above
-# fig.tight_layout()
-# fig.subplots_adjust(top=0.78)
-
-
-# # Save figure
-# fig.savefig("combined_MSP_plot_smaller.tiff", dpi=1200, bbox_inches='tight')
+# Uncertainty, stats = uncertainty_analysis(sys1, 'all', 3000, 'purchase and storage')
+# r_df, p_df,=sensitivity_analysis(sys1,'all', 3000, 'purchase and storage')
 
 # %%
