@@ -37,7 +37,17 @@ def MSP_breakdown(sys, tea, hydrogen_handling):
           tea of the system assessed
      hydrogen_handling: str
           purchase and storage or on-site production.
-
+          
+    Returns  table_MSP, new_table_MSP, MSP_table_contribution, new_MSP_table_contribution
+    -----
+    table_MSP : DataFrame
+        MSP breakdown by VOC, FOC, capital costs, [$/kg]
+    new_table_MSP : DataFrame
+        MSP breakdown by VOC, FOC, capital costs, [$/bbl]
+    MSP_table_contribution : DataFrame
+        MSP breakdown by processing areas, , [$/kg]
+    new_MSP_table_contribution
+        MSP breakdown by processing areas, , [$/bbl]
     """
 
     #Calculations needed to calcualte the manufacturing costs in $/kg of polycrude following NREL methoology
