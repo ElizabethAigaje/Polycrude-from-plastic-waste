@@ -33,7 +33,7 @@ def create_model(sys, analysis, hydrogen_handling):   #parameter to call if the 
     
     Returns
     -----
-    model : qsdsa.Model
+    model : qsdsan.Model
         List of parameters and metrics to be assessed under uncertainty
     
     See also
