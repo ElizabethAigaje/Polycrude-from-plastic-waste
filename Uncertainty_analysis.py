@@ -21,7 +21,7 @@ from System_model import *
 
 
 def uncertainty_analysis(sys,  analysis, num_samples, hydrogen_handling):
-     """ Create a class to perform the uncertainty analysis.
+     """ Create a class to perform the uncertainty analysis and make a kdeplot with the MSP distribution.
 
     Parameters
     ----------
