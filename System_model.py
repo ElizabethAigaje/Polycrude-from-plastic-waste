@@ -31,6 +31,11 @@ def create_model(sys, analysis, hydrogen_handling):   #parameter to call if the 
     hydrogen_handling: str
         purchase and storage or on-site production.
     
+    Returns
+    -----
+    model : qsdsa.Model
+        List of parameters and metrics to be assessed under uncertainty
+    
     See also
     -----
     evaluate_contextual_params, evaluate_technological_params
