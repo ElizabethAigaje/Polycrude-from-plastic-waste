@@ -33,7 +33,12 @@ def uncertainty_analysis(sys,  analysis, num_samples, hydrogen_handling):
           Number of samples
      hydrogen_handling: str
           purchase and storage or on-site production.
-
+     Returns
+     -----
+     uncertainty_model : qsdsa.Model
+          MSP probability distribution, [$/bbl]
+     stats : dict
+          5th, 25th, 50th, 75th, 95 th percentiles
     """
         
      uncertainty_model=create_model(sys,analysis=analysis,hydrogen_handling=hydrogen_handling)
